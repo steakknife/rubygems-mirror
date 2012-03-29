@@ -6,23 +6,35 @@ class Gem::Mirror
   autoload :Pool, 'rubygems/mirror/pool'
   attr_reader :specs_files
 
+<<<<<<< HEAD
   VERSION = '1.0.1'
 
+  SPECS_FILE = "specs.#{Gem.marshal_version}"
+  SPECS_FILE_Z = "specs.#{Gem.marshal_version}.gz"
+=======
   RELEASE_SPECS_FILES = [ "specs.#{Gem.marshal_version}" ]
   PRERELEASE_SPECS_FILES = [ "prerelease_specs.#{Gem.marshal_version}" ]
   PRE_AND_RELEASE_SPECS_FILES = RELEASE_SPECS_FILES + PRERELEASE_SPECS_FILES
+>>>>>>> affa4f0... made mirroring prerelease gems optional, not default
 
   DEFAULT_URI = 'http://production.cf.rubygems.org/'
   DEFAULT_TO = File.join(Gem.user_home, '.gem', 'mirror')
 
   RUBY = 'ruby'
 
-  def initialize(from = DEFAULT_URI, to = DEFAULT_TO, parallelism = nil, prerelease = false)
+<<<<<<< HEAD
+  def initialize(from = DEFAULT_URI, to = DEFAULT_TO, parallelism = nil)
     @from, @to = from, to
     @fetcher = Fetcher.new
     @pool = Pool.new(parallelism || 10)
+=======
+  def initialize(from = DEFAULT_URI, to = DEFAULT_TO, parallelism = 10, prerelease = false)
+    @from, @to = from, to
+    @fetcher = Fetcher.new
+    @pool = Pool.new(parallelism)
     @prerelease = prerelease
     @specs_files = prerelease ? PRE_AND_RELEASE_SPECS_FILES : RELEASE_SPECS_FILES
+>>>>>>> affa4f0... made mirroring prerelease gems optional, not default
   end
 
   def from(*args)
@@ -34,6 +46,15 @@ class Gem::Mirror
   end
 
   def update_specs
+<<<<<<< HEAD
+    specz = to(SPECS_FILE_Z)
+    @fetcher.fetch(from(SPECS_FILE_Z), specz)
+    open(to(SPECS_FILE), 'wb') { |f| f << Gem.gunzip(File.read(specz)) }
+  end
+
+  def gems
+    update_specs unless File.exists?(to(SPECS_FILE))
+=======
     @specs_files.each do |sf|
       sfz = "#{sf}.gz"
 
@@ -51,8 +72,9 @@ class Gem::Mirror
 
       gems += Marshal.load(File.read(to(sf)))
     end
+>>>>>>> affa4f0... made mirroring prerelease gems optional, not default
 
-    gems = Marshal.load(File.read(to(@specs_files)))
+    gems = Marshal.load(File.read(to(SPECS_FILE)))
     gems.map! do |name, ver, plat|
       # If the platform is ruby, it is not in the gem name
       "#{name}-#{ver}#{"-#{plat}" unless plat == RUBY}.gem"

@@ -12,12 +12,27 @@ class TestGemMirror < MiniTest::Unit::TestCase
     ['http://localhost:8808/', mirror_path, 1]
   end
 
+  def opts_pre
+    ['http://localhost:8808/', mirror_path, 1, true]
+  end
+
   def test_update_specs
     with_server do
       mirror = Gem::Mirror.new(*opts)
       mirror.update_specs
-      assert File.exists?(mirror_path + "/#{Gem::Mirror::SPECS_FILE_Z}")
-      assert File.exists?(mirror_path + "/#{Gem::Mirror::SPECS_FILE_Z}")
+      mirror.specs_files.each do |sf|
+        assert File.exists?(mirror_path + "/#{sf}.gz")
+      end
+    end
+  end
+
+  def test_update_specs_pre
+    with_server do
+      mirror = Gem::Mirror.new(*opts_pre)
+      mirror.update_specs
+      mirror.specs_files.each do |sf|
+        assert File.exists?(mirror_path + "/#{sf}.gz")
+      end
     end
   end
 

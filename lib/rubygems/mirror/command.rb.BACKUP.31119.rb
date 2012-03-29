@@ -18,8 +18,11 @@ document that looks like this:
   ---
   - from: http://gems.example.com # source repository URI
     to: /path/to/mirror           # destination directory
+<<<<<<< HEAD
     parallelism: 10               # use 10 threads for downloads
+=======
     pre: true                     # optional: also mirror prerelease gems (default: release only)
+>>>>>>> affa4f0... made mirroring prerelease gems optional, not default
 
 Multiple sources and destinations may be specified.
     EOF
@@ -41,17 +44,26 @@ Multiple sources and destinations may be specified.
 
       get_from = mir['from']
       save_to = File.expand_path mir['to']
+<<<<<<< HEAD
       parallelism = mir['parallelism']
+=======
       pre = mir.has_key?('pre') ? mir['pre'] : false
+>>>>>>> affa4f0... made mirroring prerelease gems optional, not default
 
       raise "Directory not found: #{save_to}" unless File.exist? save_to
       raise "Not a directory: #{save_to}" unless File.directory? save_to
 
-      mirror = Gem::Mirror.new(get_from, save_to, parallelism, pre)
+<<<<<<< HEAD
+      mirror = Gem::Mirror.new(get_from, save_to, parallelism)
+      
+      say "Fetching: #{mirror.from(Gem::Mirror::SPECS_FILE_Z)} with #{parallelism} threads"
+=======
+      mirror = Gem::Mirror.new(get_from, save_to, pre)
       
       mirror.specs_files.each do |sf|
         say "Fetching: #{mirror.from(sf)}"
       end
+>>>>>>> affa4f0... made mirroring prerelease gems optional, not default
       mirror.update_specs
 
       say "Total gems: #{mirror.gems.size}"

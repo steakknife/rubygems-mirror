@@ -19,7 +19,6 @@ document that looks like this:
   - from: http://gems.example.com # source repository URI
     to: /path/to/mirror           # destination directory
     parallelism: 10               # use 10 threads for downloads
-    pre: true                     # optional: also mirror prerelease gems (default: release only)
 
 Multiple sources and destinations may be specified.
     EOF
@@ -37,21 +36,17 @@ Multiple sources and destinations may be specified.
     mirrors.each do |mir|
       raise "mirror missing 'from' field" unless mir.has_key? 'from'
       raise "mirror missing 'to' field" unless mir.has_key? 'to'
-      raise "mirror invalid 'pre' field" unless (mir.has_key?('pre') && (mir['pre'].is_a?(TrueClass) || mir['pre'].is_a?(FalseClass))) || !mir.has_key?('pre')
 
       get_from = mir['from']
       save_to = File.expand_path mir['to']
       parallelism = mir['parallelism']
-      pre = mir.has_key?('pre') ? mir['pre'] : false
 
       raise "Directory not found: #{save_to}" unless File.exist? save_to
       raise "Not a directory: #{save_to}" unless File.directory? save_to
 
-      mirror = Gem::Mirror.new(get_from, save_to, parallelism, pre)
+      mirror = Gem::Mirror.new(get_from, save_to, parallelism)
       
-      mirror.specs_files.each do |sf|
-        say "Fetching: #{mirror.from(sf)}"
-      end
+      say "Fetching: #{mirror.from(Gem::Mirror::SPECS_FILE_Z)} with #{parallelism} threads"
       mirror.update_specs
 
       say "Total gems: #{mirror.gems.size}"
