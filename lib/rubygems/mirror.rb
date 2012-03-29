@@ -52,7 +52,6 @@ class Gem::Mirror
       gems += Marshal.load(File.read(to(sf)))
     end
 
-    gems = Marshal.load(File.read(to(@specs_files)))
     gems.map! do |name, ver, plat|
       # If the platform is ruby, it is not in the gem name
       "#{name}-#{ver}#{"-#{plat}" unless plat == RUBY}.gem"
